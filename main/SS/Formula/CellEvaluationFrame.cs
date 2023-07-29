@@ -20,6 +20,7 @@ namespace NPOI.SS.Formula
 
     using System;
     using System.Collections;
+    using System.Collections.Generic;
     using System.Text;
     using NPOI.SS.Formula.Eval;
     using NPOI.Util;
@@ -31,13 +32,13 @@ namespace NPOI.SS.Formula
     {
 
         private FormulaCellCacheEntry _cce;
-        private ArrayList _sensitiveInputCells;
+        private List<CellCacheEntry> _sensitiveInputCells;
         private FormulaUsedBlankCellSet _usedBlankCellGroup;
 
         public CellEvaluationFrame(FormulaCellCacheEntry cce)
         {
             _cce = cce;
-            _sensitiveInputCells = new ArrayList();
+            _sensitiveInputCells = new List<CellCacheEntry>();
         }
         public CellCacheEntry GetCCE()
         {
@@ -70,7 +71,7 @@ namespace NPOI.SS.Formula
                 return CellCacheEntry.EMPTY_ARRAY;
             }
             CellCacheEntry[] result = new CellCacheEntry[nItems];
-            result = _sensitiveInputCells.ToArray<CellCacheEntry>();
+            result = _sensitiveInputCells.ToArray();
             return result;
         }
         public void AddUsedBlankCell(int bookIndex, int sheetIndex, int rowIndex, int columnIndex)

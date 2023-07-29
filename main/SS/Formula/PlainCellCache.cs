@@ -20,9 +20,10 @@ namespace NPOI.SS.Formula
 
     using System;
     using System.Collections;
+    using System.Collections.Generic;
     using NPOI.Util;
 
-    public class Loc
+    public class Loc : IEquatable<Loc>
     {
 
         private long _bookSheetColumn;
@@ -50,7 +51,11 @@ namespace NPOI.SS.Formula
             return (int)(_bookSheetColumn ^ (Operator.UnsignedRightShift(_bookSheetColumn , 32))) + 17 * _rowIndex;
         }
 
-        public override bool Equals(Object obj)
+        public override bool Equals(object obj)
+        {
+            return obj is Loc loc && Equals(loc);
+        }
+        public bool Equals(Loc obj)
         {
             Loc other = (Loc)obj;
             return _bookSheetColumn == other._bookSheetColumn && _rowIndex == other._rowIndex;
@@ -93,11 +98,11 @@ namespace NPOI.SS.Formula
     public class PlainCellCache
     {
 
-        private Hashtable _plainValueEntriesByLoc;
+        private Dictionary<Loc, PlainValueCellCacheEntry> _plainValueEntriesByLoc;
 
         public PlainCellCache()
         {
-            _plainValueEntriesByLoc = new Hashtable();
+            _plainValueEntriesByLoc = new Dictionary<Loc, PlainValueCellCacheEntry>();
         }
         public void Put(Loc key, PlainValueCellCacheEntry cce)
         {
@@ -109,7 +114,7 @@ namespace NPOI.SS.Formula
         }
         public PlainValueCellCacheEntry Get(Loc key)
         {
-            return (PlainValueCellCacheEntry)_plainValueEntriesByLoc[key];
+            return _plainValueEntriesByLoc.TryGetValue(key, out var o) ? o : null;
         }
         public void Remove(Loc key)
         {

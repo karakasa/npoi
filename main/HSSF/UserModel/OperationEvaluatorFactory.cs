@@ -21,6 +21,7 @@ namespace NPOI.HSSF.UserModel
     using NPOI.SS.Formula.Eval;
 
     using System.Collections;
+    using System.Collections.Generic;
     using NPOI.SS.Formula.PTG;
 
 
@@ -36,16 +37,16 @@ namespace NPOI.HSSF.UserModel
     {
         private static Type[] OPERATION_CONSTRUCTOR_CLASS_ARRAY = new Type[] { typeof(Ptg) };
 
-        private static Hashtable _constructorsByPtgClass = InitialiseConstructorsMap();
+        private static Dictionary<Type, Type> _constructorsByPtgClass = InitialiseConstructorsMap();
 
         private OperationEvaluatorFactory()
         {
             // no instances of this class
         }
 
-        private static Hashtable InitialiseConstructorsMap()
+        private static Dictionary<Type, Type> InitialiseConstructorsMap()
         {
-            Hashtable m = new Hashtable(32);
+            var m = new Dictionary<Type, Type>(32);
             Add(m, typeof(AddPtg), typeof(AddEval));
             Add(m, typeof(DividePtg), typeof(DivideEval));
             Add(m, typeof(EqualPtg), typeof(EqualEval));
@@ -65,7 +66,7 @@ namespace NPOI.HSSF.UserModel
             return m;
         }
 
-        private static void Add(Hashtable m, Type ptgClass, Type evalClass)
+        private static void Add(Dictionary<Type, Type> m, Type ptgClass, Type evalClass)
         {
 
             // perform some validation now, to keep later exception handlers simple

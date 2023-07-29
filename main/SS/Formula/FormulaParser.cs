@@ -1769,7 +1769,7 @@ namespace NPOI.SS.Formula
         private ParseNode[] Arguments()
         {
             //average 2 args per Function
-            ArrayList temp = new ArrayList(2);
+            var temp = new List<ParseNode>(2);
             SkipWhite();
             if (look == ')')
             {
@@ -1805,7 +1805,7 @@ namespace NPOI.SS.Formula
                     throw expected("',' or ')'");
                 }
             }
-            ParseNode[] result = temp.ToArray<ParseNode>();
+            ParseNode[] result = temp.ToArray();
             return result;
         }
 
@@ -1959,7 +1959,7 @@ namespace NPOI.SS.Formula
 
         private Object[] ParseArrayRow()
         {
-            ArrayList temp = new ArrayList();
+            var temp = new List<object>();
             while (true)
             {
                 temp.Add(ParseArrayItem());
@@ -1979,9 +1979,7 @@ namespace NPOI.SS.Formula
                 break;
             }
 
-            Object[] result = new Object[temp.Count];
-            result = temp.ToArray();
-            return result;
+            return temp.ToArray();
         }
 
         private Object ParseArrayItem()

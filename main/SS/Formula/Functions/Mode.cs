@@ -22,10 +22,12 @@ namespace NPOI.SS.Formula.Functions
     using NPOI.Util;
     using NPOI.SS.Formula.Eval;
     using NPOI.SS.Formula;
+    using System.Collections.Generic;
+
     /**
-     * @author Amol S. Deshmukh &lt; amolweb at ya hoo dot com &gt;
-     *
-     */
+* @author Amol S. Deshmukh &lt; amolweb at ya hoo dot com &gt;
+*
+*/
     public class Mode : Function
     {
         /**
@@ -76,7 +78,7 @@ namespace NPOI.SS.Formula.Functions
             double result;
             try
             {
-                IList temp = new ArrayList();
+                var temp = new List<double>();
                 for (int i = 0; i < args.Length; i++)
                 {
                     CollectValues(args[i], temp);
@@ -95,7 +97,7 @@ namespace NPOI.SS.Formula.Functions
             return new NumberEval(result);
         }
 
-        private static void CollectValues(ValueEval arg, IList temp)
+        private static void CollectValues(ValueEval arg, List<double> temp)
         {
             if (arg is TwoDEval)
             {
@@ -127,7 +129,7 @@ namespace NPOI.SS.Formula.Functions
 
         }
 
-        private static void CollectValue(ValueEval arg, IList temp, bool mustBeNumber)
+        private static void CollectValue(ValueEval arg, List<double> temp, bool mustBeNumber)
         {
             if (arg is ErrorEval)
             {

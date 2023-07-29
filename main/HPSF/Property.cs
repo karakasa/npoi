@@ -31,6 +31,7 @@ namespace NPOI.HPSF
     using System.Text;
     using System.Collections;
     using NPOI.Util;
+    using System.Collections.Generic;
 
     /// <summary>
     /// A property in a {@link Section} of a {@link PropertySet}.
@@ -203,7 +204,7 @@ namespace NPOI.HPSF
             long nrEntries = LittleEndian.GetUInt(src, o);
             o += LittleEndianConsts.INT_SIZE;
 
-            Hashtable m = new Hashtable((int)nrEntries, (float)1.0);
+            var m = new Dictionary<long, string>((int)nrEntries);
 
             try
             {

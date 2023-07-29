@@ -35,7 +35,7 @@ namespace NPOI.HSSF.Model
     public class RowBlocksReader
     {
 
-        private ArrayList _plainRecords;
+        private List<Record> _plainRecords;
         private SharedValueManager _sfm;
         private MergeCellsRecord[] _mergedCellsRecords;
 
@@ -45,11 +45,11 @@ namespace NPOI.HSSF.Model
          */
         public RowBlocksReader(RecordStream rs)
         {
-            ArrayList plainRecords = new ArrayList();
-            ArrayList shFrmRecords = new ArrayList();
-            ArrayList arrayRecords = new ArrayList();
-            ArrayList tableRecords = new ArrayList();
-            ArrayList mergeCellRecords = new ArrayList();
+            var plainRecords = new List<Record>();
+            var shFrmRecords = new List<SharedFormulaRecord>();
+            var arrayRecords = new List<ArrayRecord>();
+            var tableRecords = new List<TableRecord>();
+            var mergeCellRecords = new List<MergeCellsRecord>();
             List<CellReference> firstCellRefs = new List<CellReference>();
             Record prevRec = null;
 
@@ -65,47 +65,47 @@ namespace NPOI.HSSF.Model
 
                 }
                 Record rec = rs.GetNext();
-                ArrayList dest;
+                List<Record> dest;
                 switch (rec.Sid)
                 {
                     case MergeCellsRecord.sid:
-                        dest = mergeCellRecords;
+                        mergeCellRecords.Add((MergeCellsRecord)rec);
                         break;
                     case SharedFormulaRecord.sid:
-                        dest = shFrmRecords;
-                        if (!(prevRec is FormulaRecord))
+                        if (prevRec is not FormulaRecord)
                         {
                             throw new Exception("Shared formula record should follow a FormulaRecord");
                         }
                         FormulaRecord fr = (FormulaRecord)prevRec;
                         firstCellRefs.Add(new CellReference(fr.Row, fr.Column));
 
+                        shFrmRecords.Add((SharedFormulaRecord)rec);
                         break;
                     case ArrayRecord.sid:
-                        dest = arrayRecords;
+                        arrayRecords.Add((ArrayRecord)rec);
                         break;
                     case TableRecord.sid:
-                        dest = tableRecords;
+                        tableRecords.Add((TableRecord)rec);
                         break;
-                    default: dest = plainRecords;
+                    default:
+                        plainRecords.Add(rec);
                         break;
                 }
-                dest.Add(rec);
                 prevRec = rec;
             }
             SharedFormulaRecord[] sharedFormulaRecs;
             List<ArrayRecord> arrayRecs;
             List<TableRecord> tableRecs;
-            sharedFormulaRecs = shFrmRecords.ToArray<SharedFormulaRecord>();
+            sharedFormulaRecs = shFrmRecords.ToArray();
 
             CellReference[] firstCells;
             firstCells = firstCellRefs.ToArray();
-            arrayRecs = new List<ArrayRecord>(arrayRecords.ToArray<ArrayRecord>());
-            tableRecs = new List<TableRecord>(tableRecords.ToArray<TableRecord>());
+            arrayRecs = new List<ArrayRecord>(arrayRecords.ToArray());
+            tableRecs = new List<TableRecord>(tableRecords.ToArray());
 
             _plainRecords = plainRecords;
             _sfm = SharedValueManager.Create(sharedFormulaRecs,firstCells, arrayRecs, tableRecs);
-            _mergedCellsRecords = mergeCellRecords.ToArray<MergeCellsRecord>();
+            _mergedCellsRecords = mergeCellRecords.ToArray();
         }
 
         /**

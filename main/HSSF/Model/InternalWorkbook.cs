@@ -562,7 +562,6 @@ namespace NPOI.HSSF.Model
                     else if (er is EscherContainerRecord)
                     {
                         //recursively find shape records and re-generate shapeId
-                        ArrayList spRecords = new ArrayList();
                         EscherContainerRecord cp = (EscherContainerRecord)er;
                         for (IEnumerator spIt = cp.ChildRecords.GetEnumerator(); spIt.MoveNext(); )
                         {

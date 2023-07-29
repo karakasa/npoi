@@ -18,7 +18,7 @@
 namespace NPOI.HSSF.Record.Aggregates
 {
     using System.Collections;
-
+    using System.Collections.Generic;
     using NPOI.HSSF.Model;
     using NPOI.HSSF.Record;
 
@@ -35,15 +35,15 @@ namespace NPOI.HSSF.Record.Aggregates
          * The list of data validations for the current sheet.
          * Note - this may be empty (contrary to OOO documentation)
          */
-        private IList _validationList;
+        private List<DVRecord> _validationList;
 
         public DataValidityTable(RecordStream rs)
         {
             _headerRec = (DVALRecord)rs.GetNext();
-            IList temp = new ArrayList();
+            var temp = new List<DVRecord>();
             while (rs.PeekNextClass() == typeof(DVRecord))
             {
-                temp.Add(rs.GetNext());
+                temp.Add((DVRecord)rs.GetNext());
             }
             _validationList = temp;
         }
@@ -51,7 +51,7 @@ namespace NPOI.HSSF.Record.Aggregates
         public DataValidityTable()
         {
             _headerRec = new DVALRecord();
-            _validationList = new ArrayList();
+            _validationList = new List<DVRecord>();
         }
 
         public override void VisitContainedRecords(RecordVisitor rv)

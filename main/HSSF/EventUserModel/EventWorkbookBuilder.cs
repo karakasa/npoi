@@ -115,8 +115,8 @@ namespace NPOI.HSSF.EventUserModel
         public class SheetRecordCollectingListener : IHSSFListener
         {
             private IHSSFListener childListener;
-            private ArrayList boundSheetRecords = new ArrayList();
-            private ArrayList externSheetRecords = new ArrayList();
+            private List<BoundSheetRecord> boundSheetRecords = new();
+            private List<ExternSheetRecord> externSheetRecords = new();
             private SSTRecord sstRecord = null;
 
             /// <summary>
@@ -135,7 +135,7 @@ namespace NPOI.HSSF.EventUserModel
             /// <returns></returns>
             public BoundSheetRecord[] GetBoundSheetRecords()
             {
-                return boundSheetRecords.ToArray<BoundSheetRecord>();
+                return boundSheetRecords.ToArray();
             }
             /// <summary>
             /// Gets the extern sheet records.
@@ -143,7 +143,7 @@ namespace NPOI.HSSF.EventUserModel
             /// <returns></returns>
             public ExternSheetRecord[] GetExternSheetRecords()
             {
-                return externSheetRecords.ToArray<ExternSheetRecord>();
+                return externSheetRecords.ToArray();
             }
             /// <summary>
             /// Gets the SST record.
@@ -203,17 +203,17 @@ namespace NPOI.HSSF.EventUserModel
             /// <param name="record">The record.</param>
             public void ProcessRecordInternally(Record record)
             {
-                if (record is BoundSheetRecord)
+                switch (record)
                 {
-                    boundSheetRecords.Add(record);
-                }
-                else if (record is ExternSheetRecord)
-                {
-                    externSheetRecords.Add(record);
-                }
-                else if (record is SSTRecord)
-                {
-                    sstRecord = (SSTRecord)record;
+                    case BoundSheetRecord bsr:
+                        boundSheetRecords.Add(bsr);
+                        break;
+                    case ExternSheetRecord esr:
+                        externSheetRecords.Add(esr);
+                        break;
+                    case SSTRecord:
+                        sstRecord = (SSTRecord)record;
+                        break;
                 }
             }
         }

@@ -43,8 +43,8 @@ namespace NPOI.HSSF.Record
 
         public short sid;
         // fix warning CS0169 "never used": private short numBreaks;
-        private IList<Break> _breaks;
-        private Hashtable _breakMap;
+        private List<Break> _breaks;
+        private Dictionary<int, Break> _breakMap;
 
         /**
          * Since both records store 2byte integers (short), no point in 
@@ -86,14 +86,14 @@ namespace NPOI.HSSF.Record
         public PageBreakRecord()
         {
             _breaks = new List<Break>();
-            _breakMap = new Hashtable();
+            _breakMap = new Dictionary<int, Break>();
         }
 
         public PageBreakRecord(RecordInputStream in1)
         {
             int nBreaks = in1.ReadShort();
             _breaks = new List<Break>(nBreaks + 2);
-            _breakMap = new Hashtable();
+            _breakMap = new Dictionary<int, Break>();
 
             for (int k = 0; k < nBreaks; k++)
             {
@@ -208,7 +208,10 @@ namespace NPOI.HSSF.Record
             //    _breakMap = new Hashtable();
             //}
             int key = (int)main;
-            Break region = (Break)_breakMap[key];
+
+            if (!_breakMap.TryGetValue(key, out var region))
+                region = null;
+
             if (region != null)
             {
                 region.main = main;
@@ -229,10 +232,11 @@ namespace NPOI.HSSF.Record
          */
         public void RemoveBreak(int main)
         {
-            int rowKey = main;
-            Break region = (Break)_breakMap[rowKey];
+            if (!_breakMap.TryGetValue(main, out var region))
+                region = null;
+
             _breaks.Remove(region);
-            _breakMap.Remove(rowKey);
+            _breakMap.Remove(main);
         }
 
         public override int RecordSize
@@ -270,7 +274,8 @@ namespace NPOI.HSSF.Record
             //if (_breakMap == null)
             //    return null;
             //int rowKey = (int)main;
-            return (Break)_breakMap[main];
+
+            return _breakMap.TryGetValue(main, out var o) ? o : null;
         }
         public int[] GetBreaks()
         {

@@ -180,7 +180,7 @@ namespace NPOI.SS.UserModel
          * A map to cache formats.
          *  Map<String,FormatBase> Formats
          */
-        private Hashtable formats;
+        private Dictionary<string, FormatBase> formats;
         private bool emulateCSV = false;
 
         /** For logging any problems we find */
@@ -247,7 +247,7 @@ namespace NPOI.SS.UserModel
             defaultDateformat = new SimpleDateFormat(dateSymbols.FullDateTimePattern, dateSymbols);
             defaultDateformat.TimeZone = TimeZoneInfo.Local;
 
-            formats = new Hashtable();
+            formats = new Dictionary<string, FormatBase>();
 
             // init built-in Formats
             FormatBase zipFormat = ZipPlusFourFormat.Instance;
@@ -372,8 +372,8 @@ namespace NPOI.SS.UserModel
             {
                 formatStr = formatStr.Replace("#", "");
             }
-            FormatBase format = (FormatBase)formats[formatStr];
-            if (format != null)
+            
+            if (formats.TryGetValue(formatStr, out var format))
             {
                 return format;
             }

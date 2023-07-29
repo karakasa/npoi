@@ -19,8 +19,9 @@
 
 using System;
 using System.Collections;
-
+using System.Collections.Generic;
 using NPOI.POIFS.FileSystem;
+using NPOI.SS.Formula.Functions;
 
 namespace NPOI.POIFS.EventFileSystem
 {
@@ -36,20 +37,20 @@ namespace NPOI.POIFS.EventFileSystem
     {
 
         // the POIFSReaderListeners who listen to all POIFSReaderEvents
-        private ArrayList omnivorousListeners;
+        private List<POIFSReaderListener> omnivorousListeners;
 
         // Each mapping in this Map has a key consisting of a
         // POIFSReaderListener and a value cosisting of a Set of
         // DocumentDescriptors for the documents that POIFSReaderListener
         // is interested in; used to efficiently manage the registry
-        private Hashtable selectiveListeners;
+        private Dictionary<POIFSReaderListener, List<DocumentDescriptor>> selectiveListeners;
 
         // Each mapping in this Map has a key consisting of a
         // DocumentDescriptor and a value consisting of a Set of
         // POIFSReaderListeners for the document matching that
         // DocumentDescriptor; used when a document is found, to quickly
         // Get the listeners interested in that document
-        private Hashtable chosenDocumentDescriptors;
+        private Dictionary<DocumentDescriptor, List<POIFSReaderListener>> chosenDocumentDescriptors;
 
         /**
          * Construct the registry
@@ -57,9 +58,9 @@ namespace NPOI.POIFS.EventFileSystem
 
         public POIFSReaderRegistry()
         {
-            omnivorousListeners = new ArrayList();
-            selectiveListeners = new Hashtable();
-            chosenDocumentDescriptors = new Hashtable();
+            omnivorousListeners = new List<POIFSReaderListener>();
+            selectiveListeners = new Dictionary<POIFSReaderListener, List<DocumentDescriptor>>();
+            chosenDocumentDescriptors = new Dictionary<DocumentDescriptor, List<POIFSReaderListener>>();
         }
 
         /**
@@ -79,36 +80,26 @@ namespace NPOI.POIFS.EventFileSystem
 
                 // not an omnivorous listener (if it was, this method is a
                 // no-op)
-                ArrayList descriptors = (ArrayList)selectiveListeners[listener];
 
-                if (descriptors == null)
-                {
+                if (!selectiveListeners.TryGetValue(listener, out var descriptors))
+                    descriptors = selectiveListeners[listener] = new();
 
-                    // this listener has not Registered before
-                    descriptors = new ArrayList();
-                    selectiveListeners[listener] = descriptors;
-                }
                 DocumentDescriptor descriptor = new DocumentDescriptor(path,
                                                     documentName);
 
-                if (descriptors.Add(descriptor) >= 0)
-                {
+                descriptors.Add(descriptor);
 
-                    // this listener wasn't alReady listening for this
-                    // document -- Add the listener to the Set of
-                    // listeners for this document
-                    ArrayList listeners =
-                        (ArrayList)chosenDocumentDescriptors[descriptor];
+                // Original code may be wrong. ArrayList.Add is always >=0
+                // if (descriptors.Add(descriptor) >= 0)
 
-                    if (listeners == null)
-                    {
+                // this listener wasn't alReady listening for this
+                // document -- Add the listener to the Set of
+                // listeners for this document
 
-                        // nobody was listening for this document before
-                        listeners = new ArrayList();
-                        chosenDocumentDescriptors[descriptor] = listeners;
-                    }
-                    listeners.Add(listener);
-                }
+                if (!chosenDocumentDescriptors.TryGetValue(descriptor, out var listeners))
+                    listeners = chosenDocumentDescriptors[descriptor] = new List<POIFSReaderListener>();
+
+                listeners.Add(listener);
             }
         }
 
@@ -143,30 +134,24 @@ namespace NPOI.POIFS.EventFileSystem
 
         public IEnumerator GetListeners(POIFSDocumentPath path, String name)
         {
-            ArrayList rval = new ArrayList(omnivorousListeners);
-            ArrayList selectiveListeners =
-                (ArrayList)chosenDocumentDescriptors[new DocumentDescriptor(path,
-                    name)];
+            var rval = new List<POIFSReaderListener>(omnivorousListeners);
 
-            if (selectiveListeners != null)
+            if (chosenDocumentDescriptors.TryGetValue(new DocumentDescriptor(path, name), out var selectiveListeners))
             {
                 rval.AddRange(selectiveListeners);
             }
+
             return rval.GetEnumerator();
         }
 
         private void RemoveSelectiveListener(POIFSReaderListener listener)
         {
-            ArrayList selectedDescriptors = (ArrayList)selectiveListeners[listener];
-
-            if (selectedDescriptors != null)
+            if (selectiveListeners.TryGetValue(listener, out var selectedDescriptors))
             {
                 selectiveListeners.Remove(listener);
-                IEnumerator iter = selectedDescriptors.GetEnumerator();
-
-                while (iter.MoveNext())
+                foreach (var it in selectedDescriptors)
                 {
-                    DropDocument(listener, (DocumentDescriptor)iter.Current);
+                    DropDocument(listener, it);
                 }
             }
         }
@@ -174,12 +159,13 @@ namespace NPOI.POIFS.EventFileSystem
         private void DropDocument(POIFSReaderListener listener,
                                   DocumentDescriptor descriptor)
         {
-            ArrayList listeners = (ArrayList)chosenDocumentDescriptors[descriptor];
-
-            listeners.Remove(listener);
-            if (listeners.Count == 0)
+            if (chosenDocumentDescriptors.TryGetValue(descriptor, out var listeners))
             {
-                chosenDocumentDescriptors.Remove(descriptor);
+                listeners.Remove(listener);
+                if (listeners.Count == 0)
+                {
+                    chosenDocumentDescriptors.Remove(descriptor);
+                }
             }
         }
     }   // end package scope class POIFSReaderRegistry

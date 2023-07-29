@@ -42,7 +42,7 @@ namespace NPOI.HSSF.UserModel
         private static readonly Type[] REF3D_CONSTRUCTOR_CLASS_ARRAY = new Type[] { typeof(Ptg), typeof(ValueEval) };
 
         // Maps for mapping *Eval to *Ptg
-        private static readonly Hashtable VALUE_EVALS_MAP = new Hashtable();
+        private static readonly Dictionary<Type, Type> VALUE_EVALS_MAP = new();
 
         /*
          * Following is the mapping between the Ptg tokens returned 

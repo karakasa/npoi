@@ -17,6 +17,7 @@
 namespace NPOI.HSSF.EventUserModel
 {
     using System.Collections;
+    using System.Collections.Generic;
     using NPOI.HSSF.Record;
     using NPOI.Util;
 
@@ -48,7 +49,7 @@ namespace NPOI.HSSF.EventUserModel
          *  we Check for continue records and
          *  return rec)
          */
-        private ArrayList bonusRecords = null;
+        private List<Record> bonusRecords = null;
 
         /** 
          * The next record to return, which may need to have its
@@ -173,7 +174,7 @@ namespace NPOI.HSSF.EventUserModel
                     //  pass those on to the listener now
                     if (recs.Length > 1)
                     {
-                        bonusRecords = new ArrayList(recs.Length - 1);
+                        bonusRecords = new List<Record>(recs.Length - 1);
                         for (int k = 0; k < (recs.Length - 1); k++)
                         {
                             bonusRecords.Add(recs[k]);

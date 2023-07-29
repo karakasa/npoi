@@ -20,6 +20,7 @@ namespace NPOI.SS.Formula
 
     using System;
     using System.Collections;
+    using System.Collections.Generic;
     using NPOI.SS.Formula.Eval;
     
 
@@ -36,15 +37,15 @@ namespace NPOI.SS.Formula
     public class EvaluationTracker
     {
         // TODO - consider deleting this class and letting CellEvaluationFrame take care of itself
-        private IList _evaluationFrames;
-        private IList _currentlyEvaluatingCells;
+        private List<CellEvaluationFrame> _evaluationFrames;
+        private List<CellCacheEntry> _currentlyEvaluatingCells;
         private EvaluationCache _cache;
 
         public EvaluationTracker(EvaluationCache cache)
         {
             _cache = cache;
-            _evaluationFrames = new ArrayList();
-            _currentlyEvaluatingCells = new ArrayList();
+            _evaluationFrames = new List<CellEvaluationFrame>();
+            _currentlyEvaluatingCells = new List<CellCacheEntry>();
         }
 
         /**

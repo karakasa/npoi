@@ -20,21 +20,23 @@ namespace NPOI.HSSF.Util
     using NPOI.Util;
     using System.Collections;
     using NPOI.HSSF.Record;
+    using System.Collections.Generic;
+
     /**
-     * <p>Title: HSSFCellRangeAddress</p>
-     * <p>Description:
-     *          Implementation of the cell range Address lists,like Is described in
-     *          OpenOffice.org's Excel Documentation .
-     *          In BIFF8 there Is a common way to store absolute cell range Address
-     *          lists in several records (not formulas). A cell range Address list
-     *          consists of a field with the number of ranges and the list of the range
-     *          Addresses. Each cell range Address (called an AddR structure) Contains
-     *          4 16-bit-values.</p>
-     * <p>Copyright: Copyright (c) 2004</p>
-     * <p>Company: </p>
-     * @author Dragos Buleandra (dragos.buleandra@trade2b.ro)
-     * @version 2.0-pre
-     */
+* <p>Title: HSSFCellRangeAddress</p>
+* <p>Description:
+*          Implementation of the cell range Address lists,like Is described in
+*          OpenOffice.org's Excel Documentation .
+*          In BIFF8 there Is a common way to store absolute cell range Address
+*          lists in several records (not formulas). A cell range Address list
+*          consists of a field with the number of ranges and the list of the range
+*          Addresses. Each cell range Address (called an AddR structure) Contains
+*          4 16-bit-values.</p>
+* <p>Copyright: Copyright (c) 2004</p>
+* <p>Company: </p>
+* @author Dragos Buleandra (dragos.buleandra@trade2b.ro)
+* @version 2.0-pre
+*/
 
     public class HSSFCellRangeAddress
     {
@@ -48,7 +50,7 @@ namespace NPOI.HSSF.Util
         /**
          * List of AddR structures. Each structure represents a cell range
          */
-        private ArrayList field_regions_list;
+        private List<AddrStructure> field_regions_list;
 
         public HSSFCellRangeAddress()
         {
@@ -70,7 +72,7 @@ namespace NPOI.HSSF.Util
         public void FillFields(RecordInputStream in1)
         {
             this.field_Addr_number = in1.ReadShort();
-            this.field_regions_list = new ArrayList(this.field_Addr_number);
+            this.field_regions_list = new List<AddrStructure>(this.field_Addr_number);
 
             for (int k = 0; k < this.field_Addr_number; k++)
             {
@@ -124,7 +126,7 @@ namespace NPOI.HSSF.Util
             {
                 //just to be sure :-)
                 this.field_Addr_number = 0;
-                this.field_regions_list = new ArrayList(10);
+                this.field_regions_list = new List<AddrStructure>(10);
             }
             AddrStructure region = new AddrStructure(first_row, last_row, first_col, last_col);
 
@@ -139,7 +141,7 @@ namespace NPOI.HSSF.Util
          */
         public void RemoveAddRStructureAt(int index)
         {
-            this.field_regions_list.Remove(index);
+            this.field_regions_list.RemoveAt(index);
             this.field_Addr_number--;
         }
 

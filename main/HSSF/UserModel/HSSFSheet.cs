@@ -2600,14 +2600,14 @@ namespace NPOI.HSSF.UserModel
         {
             get
             {
-                IList dvRecords = new ArrayList();
-                IList records = _sheet.Records;
+                var dvRecords = new List<DVRecord>();
+                var records = _sheet.Records;
 
                 for (int index = 0; index < records.Count; index++)
                 {
-                    if (records[index] is DVRecord)
+                    if (records[index] is DVRecord dvr)
                     {
-                        dvRecords.Add(records[index]);
+                        dvRecords.Add(dvr);
                     }
                 }
                 return dvRecords;

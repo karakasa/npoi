@@ -97,7 +97,7 @@ namespace NPOI.HSSF.UserModel
             /*
              * contains coordinates of comments we iterate over
              */
-            Hashtable coordinates = new Hashtable(tailRecords.Count);
+            var coordinates = new HashSet<string>();
             foreach (NoteRecord rec in tailRecords.Values)
             {
                 String noteRef = new CellReference(rec.Row, rec.Column).FormatAsString(); // A1-style notation
@@ -107,7 +107,7 @@ namespace NPOI.HSSF.UserModel
                 }
                 else
                 {
-                    coordinates.Add(noteRef, null);
+                    coordinates.Add(noteRef);
                 }
             }
         }

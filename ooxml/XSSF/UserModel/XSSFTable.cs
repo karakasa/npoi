@@ -154,7 +154,7 @@ namespace NPOI.XSSF.UserModel
             if (commonXPath == null)
             {
 
-                Array commonTokens = null;
+                string[] commonTokens = null;
 
                 foreach (XSSFTableColumn column in GetColumns())
                 {
@@ -162,7 +162,7 @@ namespace NPOI.XSSF.UserModel
                     {
                         String xpath = column.GetXmlColumnPr().XPath;
                         String[] tokens = xpath.Split(new char[] { '/' });
-                        if (commonTokens==null)
+                        if (commonTokens == null)
                         {
                             commonTokens = tokens;
                         }
@@ -173,8 +173,7 @@ namespace NPOI.XSSF.UserModel
                             {
                                 if (!commonTokens.GetValue(i).Equals(tokens[i]))
                                 {
-                                    ArrayList subCommonTokens = Arrays.AsList(commonTokens).GetRange(0, i);
-                                    commonTokens = subCommonTokens.ToArray<string>();
+                                    commonTokens = commonTokens.Take(i).ToArray();
                                     break;
                                 }
                             }

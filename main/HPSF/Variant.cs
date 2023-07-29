@@ -29,6 +29,7 @@ namespace NPOI.HPSF
 {
     using System;
     using System.Collections;
+    using System.Collections.Generic;
 
 
     /// <summary>
@@ -358,9 +359,9 @@ namespace NPOI.HPSF
          * Maps the numbers denoting the variant types To their corresponding
          * variant type names.
          */
-        private static IDictionary numberToName;
+        private static Dictionary<int, string> numberToName;
 
-        private static IDictionary numberToLength;
+        private static Dictionary<int, int> numberToLength;
 
         /**
          * Denotes a variant type with a Length that is unknown To HPSF yet.
@@ -397,92 +398,96 @@ namespace NPOI.HPSF
         static Variant()
         {
             /* Initialize the number-to-name map: */
-            Hashtable tm1 = new Hashtable();
-            tm1[0] = "VT_EMPTY";
-            tm1[1] = "VT_NULL";
-            tm1[2] = "VT_I2";
-            tm1[3] = "VT_I4";
-            tm1[4] = "VT_R4";
-            tm1[5] = "VT_R8";
-            tm1[6] = "VT_CY";
-            tm1[7] = "VT_DATE";
-            tm1[8] = "VT_BSTR";
-            tm1[9] = "VT_DISPATCH";
-            tm1[10] = "VT_ERROR";
-            tm1[11] = "VT_BOOL";
-            tm1[12] = "VT_VARIANT";
-            tm1[13] = "VT_UNKNOWN";
-            tm1[14] = "VT_DECIMAL";
-            tm1[16] = "VT_I1";
-            tm1[17] = "VT_UI1";
-            tm1[18] = "VT_UI2";
-            tm1[19] = "VT_UI4";
-            tm1[20] = "VT_I8";
-            tm1[21] = "VT_UI8";
-            tm1[22] = "VT_INT";
-            tm1[23] = "VT_UINT";
-            tm1[24] = "VT_VOID";
-            tm1[25] = "VT_HRESULT";
-            tm1[26] = "VT_PTR";
-            tm1[27] = "VT_SAFEARRAY";
-            tm1[28] = "VT_CARRAY";
-            tm1[29] = "VT_USERDEFINED";
-            tm1[30] = "VT_LPSTR";
-            tm1[31] = "VT_LPWSTR";
-            tm1[64] = "VT_FILETIME";
-            tm1[65] = "VT_BLOB";
-            tm1[66] = "VT_STREAM";
-            tm1[67] = "VT_STORAGE";
-            tm1[68] = "VT_STREAMED_OBJECT";
-            tm1[69] = "VT_STORED_OBJECT";
-            tm1[70] = "VT_BLOB_OBJECT";
-            tm1[71] = "VT_CF";
-            tm1[72] = "VT_CLSID";
+            Dictionary<int, string> tm1 = new()
+            {
+                [0] = "VT_EMPTY",
+                [1] = "VT_NULL",
+                [2] = "VT_I2",
+                [3] = "VT_I4",
+                [4] = "VT_R4",
+                [5] = "VT_R8",
+                [6] = "VT_CY",
+                [7] = "VT_DATE",
+                [8] = "VT_BSTR",
+                [9] = "VT_DISPATCH",
+                [10] = "VT_ERROR",
+                [11] = "VT_BOOL",
+                [12] = "VT_VARIANT",
+                [13] = "VT_UNKNOWN",
+                [14] = "VT_DECIMAL",
+                [16] = "VT_I1",
+                [17] = "VT_UI1",
+                [18] = "VT_UI2",
+                [19] = "VT_UI4",
+                [20] = "VT_I8",
+                [21] = "VT_UI8",
+                [22] = "VT_INT",
+                [23] = "VT_UINT",
+                [24] = "VT_VOID",
+                [25] = "VT_HRESULT",
+                [26] = "VT_PTR",
+                [27] = "VT_SAFEARRAY",
+                [28] = "VT_CARRAY",
+                [29] = "VT_USERDEFINED",
+                [30] = "VT_LPSTR",
+                [31] = "VT_LPWSTR",
+                [64] = "VT_FILETIME",
+                [65] = "VT_BLOB",
+                [66] = "VT_STREAM",
+                [67] = "VT_STORAGE",
+                [68] = "VT_STREAMED_OBJECT",
+                [69] = "VT_STORED_OBJECT",
+                [70] = "VT_BLOB_OBJECT",
+                [71] = "VT_CF",
+                [72] = "VT_CLSID"
+            };
 
             numberToName = tm1;
 
             /* Initialize the number-to-Length map: */
-            Hashtable tm2 = new Hashtable();
-            tm2[0] = Length_0;
-            tm2[1] = Length_UNKNOWN;
-            tm2[2] = Length_2;
-            tm2[3] = Length_4;
-            tm2[4] = Length_4;
-            tm2[5] = Length_8;
-            tm2[6] = Length_UNKNOWN;
-            tm2[7] = Length_UNKNOWN;
-            tm2[8] = Length_UNKNOWN;
-            tm2[9] = Length_UNKNOWN;
-            tm2[10] = Length_UNKNOWN;
-            tm2[11] = Length_UNKNOWN;
-            tm2[12] = Length_UNKNOWN;
-            tm2[13] = Length_UNKNOWN;
-            tm2[14] = Length_UNKNOWN;
-            tm2[16] = Length_UNKNOWN;
-            tm2[17] = Length_UNKNOWN;
-            tm2[18] = Length_UNKNOWN;
-            tm2[19] = Length_UNKNOWN;
-            tm2[20] = Length_UNKNOWN;
-            tm2[21] = Length_UNKNOWN;
-            tm2[22] = Length_UNKNOWN;
-            tm2[23] = Length_UNKNOWN;
-            tm2[24] = Length_UNKNOWN;
-            tm2[25] = Length_UNKNOWN;
-            tm2[26] = Length_UNKNOWN;
-            tm2[27] = Length_UNKNOWN;
-            tm2[28] = Length_UNKNOWN;
-            tm2[29] = Length_UNKNOWN;
-            tm2[30] = Length_VARIABLE;
-            tm2[31] = Length_UNKNOWN;
-            tm2[64] = Length_8;
-            tm2[65] = Length_UNKNOWN;
-            tm2[66] = Length_UNKNOWN;
-            tm2[67] = Length_UNKNOWN;
-            tm2[68] = Length_UNKNOWN;
-            tm2[69] = Length_UNKNOWN;
-            tm2[70] = Length_UNKNOWN;
-            tm2[71] = Length_UNKNOWN;
-            tm2[72] = Length_UNKNOWN;
+            Dictionary<int, int> tm2 = new()
+            {
+                [0] = Length_0,
+                [1] = Length_UNKNOWN,
+                [2] = Length_2,
+                [3] = Length_4,
+                [4] = Length_4,
+                [5] = Length_8,
+                [6] = Length_UNKNOWN,
+                [7] = Length_UNKNOWN,
+                [8] = Length_UNKNOWN,
+                [9] = Length_UNKNOWN,
+                [10] = Length_UNKNOWN,
+                [11] = Length_UNKNOWN,
+                [12] = Length_UNKNOWN,
+                [13] = Length_UNKNOWN,
+                [14] = Length_UNKNOWN,
+                [16] = Length_UNKNOWN,
+                [17] = Length_UNKNOWN,
+                [18] = Length_UNKNOWN,
+                [19] = Length_UNKNOWN,
+                [20] = Length_UNKNOWN,
+                [21] = Length_UNKNOWN,
+                [22] = Length_UNKNOWN,
+                [23] = Length_UNKNOWN,
+                [24] = Length_UNKNOWN,
+                [25] = Length_UNKNOWN,
+                [26] = Length_UNKNOWN,
+                [27] = Length_UNKNOWN,
+                [28] = Length_UNKNOWN,
+                [29] = Length_UNKNOWN,
+                [30] = Length_VARIABLE,
+                [31] = Length_UNKNOWN,
+                [64] = Length_8,
+                [65] = Length_UNKNOWN,
+                [66] = Length_UNKNOWN,
+                [67] = Length_UNKNOWN,
+                [68] = Length_UNKNOWN,
+                [69] = Length_UNKNOWN,
+                [70] = Length_UNKNOWN,
+                [71] = Length_UNKNOWN,
+                [72] = Length_UNKNOWN
+            };
 
             numberToLength = tm2;
         }
@@ -497,8 +502,7 @@ namespace NPOI.HPSF
         /// <returns>The variant type name or the string "unknown variant type"</returns>
         public static String GetVariantName(long variantType)
         {
-            String name = (String)numberToName[variantType];
-            return name != null ? name : "unknown variant type";
+            return numberToName.TryGetValue((int)variantType, out var name) ? name : "unknown variant type";
         }
 
         /// <summary>
@@ -511,11 +515,7 @@ namespace NPOI.HPSF
         /// unsupported variant type.</returns>
         public static int GetVariantLength(long variantType)
         {
-            long key = (int)variantType;
-            if (numberToLength.Contains(key))
-                return -2;
-            long Length = (long)numberToLength[key];
-            return Convert.ToInt32(Length);
+            return numberToLength.TryGetValue((int)variantType, out var o) ? o : -2;
         }
 
     }

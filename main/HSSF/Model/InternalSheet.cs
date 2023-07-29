@@ -2083,7 +2083,7 @@ namespace NPOI.HSSF.Model
             if (rowBreaks == null)
                 return;
             IEnumerator iterator = breaks.GetBreaksEnumerator();
-            IList ShiftedBreak = new ArrayList();
+            var ShiftedBreak = new List<PageBreakRecord.Break>();
             while (iterator.MoveNext())
             {
                 PageBreakRecord.Break breakItem = (PageBreakRecord.Break)iterator.Current;
@@ -2094,10 +2094,8 @@ namespace NPOI.HSSF.Model
                     ShiftedBreak.Add(breakItem);
             }
 
-            iterator = ShiftedBreak.GetEnumerator();
-            while (iterator.MoveNext())
+            foreach(var breakItem in ShiftedBreak)
             {
-                PageBreakRecord.Break breakItem = (PageBreakRecord.Break)iterator.Current;
                 breaks.RemoveBreak(breakItem.main);
                 breaks.AddBreak(breakItem.main + count, breakItem.subFrom, breakItem.subTo);
             }

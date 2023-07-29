@@ -21,6 +21,7 @@ namespace NPOI.HSSF.EventUserModel
 {
     using System;
     using System.Collections;
+    using System.Collections.Generic;
     using NPOI.HSSF.Record;
 
 
@@ -32,7 +33,7 @@ namespace NPOI.HSSF.EventUserModel
     /// </summary>
     public class HSSFRequest
     {
-        private Hashtable records;
+        private Dictionary<short, List<IHSSFListener>> records;
 
         /// <summary>
         /// Creates a new instance of HSSFRequest
@@ -40,7 +41,7 @@ namespace NPOI.HSSF.EventUserModel
         public HSSFRequest()
         {
             records =
-                new Hashtable(50);   // most folks won't listen for too many of these
+                new Dictionary<short, List<IHSSFListener>>(50);   // most folks won't listen for too many of these
         }
 
         /// <summary>
@@ -54,20 +55,28 @@ namespace NPOI.HSSF.EventUserModel
         /// <param name="sid">identifier for the record type this Is the .sid static member on the individual records</param>
         public void AddListener(IHSSFListener lsnr, short sid)
         {
-            IList list = null;
-            Object obj = records[sid];
+            if (!records.TryGetValue(sid, out var list))
+            {
+                records[sid] = list = new List<IHSSFListener>();
+            }
 
+            list.Add(lsnr);
+
+            // The original code may be wrong, where listener is not added if sid exists.
+
+            /*
             if (obj != null)
             {
-                list = (IList)obj;
+                list = obj;
             }
             else
             {
-                list = new ArrayList(
-                    1);   // probably most people will use one listener
-                list.Add(lsnr);
+                list = new ArrayList(1)
+                {
+                    lsnr
+                };   // probably most people will use one listener
                 records[sid]=list;
-            }
+            }*/
         }
 
         /// <summary>

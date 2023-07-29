@@ -23,7 +23,7 @@ namespace NPOI.SS.Formula.PTG
      * @author  andy
      */
     [Serializable]
-    public abstract class OperationPtg : Ptg
+    public abstract class OperationPtg : Ptg, IEquatable<OperationPtg>
     {
         public const int TYPE_UNARY = 0;
         public const int TYPE_BINARY = 1;
@@ -37,6 +37,12 @@ namespace NPOI.SS.Formula.PTG
          */
         public abstract String ToFormulaString(String[] operands);
 
+        public bool Equals(OperationPtg other)
+        {
+            // Doable because of singleton pattern
+            return ReferenceEquals(this, other);
+        }
+
         /**
          * The number of operands expected by the operations
          */
@@ -45,6 +51,15 @@ namespace NPOI.SS.Formula.PTG
         public override byte DefaultOperandClass
         {
             get { return Ptg.CLASS_VALUE; }
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+        public override bool Equals(object obj)
+        {
+            return obj is OperationPtg another && Equals(another);
         }
     }
 }

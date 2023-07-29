@@ -294,13 +294,6 @@ namespace NPOI.SS.Util
         //    return result;
         //}
 
-        [Obsolete]
-        private static CellRangeAddress[] ToArray(ArrayList temp)
-        {
-            CellRangeAddress[] result = new CellRangeAddress[temp.Count];
-            result = temp.ToArray<CellRangeAddress>();
-            return result;
-        }
 
 
 

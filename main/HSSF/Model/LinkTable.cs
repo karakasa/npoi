@@ -130,20 +130,20 @@ namespace NPOI.HSSF.Model
             public ExternalBookBlock(RecordStream rs)
             {
                 _externalBookRecord = (SupBookRecord)rs.GetNext();
-                ArrayList temp = new ArrayList();
+                var temp1 = new List<ExternalNameRecord>();
                 while (rs.PeekNextClass() == typeof(ExternalNameRecord))
                 {
-                    temp.Add(rs.GetNext());
+                    temp1.Add((ExternalNameRecord)rs.GetNext());
                 }
-                _externalNameRecords = temp.ToArray<ExternalNameRecord>();
+                _externalNameRecords = temp1.ToArray();
 
-                temp.Clear();
+                var temp2 = new List<CRNBlock>();
 
                 while (rs.PeekNextClass() == typeof(CRNCountRecord))
                 {
-                    temp.Add(new CRNBlock(rs));
+                    temp2.Add(new CRNBlock(rs));
                 }
-                _crnBlocks = temp.ToArray<CRNBlock>();
+                _crnBlocks = temp2.ToArray();
             }
 
             /**

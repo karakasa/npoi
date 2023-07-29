@@ -20,6 +20,8 @@ namespace NPOI.HSSF.EventModel
     using System.IO;
     using System.Collections;
     using NPOI.HSSF.Record;
+    using System.Collections.Generic;
+    using System.Linq;
 
 
     /**
@@ -37,7 +39,7 @@ namespace NPOI.HSSF.EventModel
     {
 
         private IERFListener _listener;
-        private ArrayList _sids;
+        private HashSet<short> _sids;
 
         /**
          * Create an EventRecordFactory
@@ -45,21 +47,22 @@ namespace NPOI.HSSF.EventModel
          * handler functions are obeyed.  False means they are ignored. True
          * means the event loop exits on error.
          */
-        public EventRecordFactory(IERFListener listener, ArrayList sids)
+        public EventRecordFactory(IERFListener listener, IEnumerable<short> sids)
         {
             _listener = listener;
-            _sids = sids;
 
-            if (_sids == null)
+            if (sids is null)
             {
                 _sids = null;
             }
             else
             {
-                if (_sids == null)
-                _sids = new ArrayList();
-                _sids.Sort(); // for faster binary search
+                _sids = new HashSet<short>(sids);
             }
+        }
+        public EventRecordFactory(IERFListener listener, ArrayList sids) 
+            : this(listener, sids.Cast<short>())
+        {
         }
         private bool IsSidIncluded(int sid)
         {
@@ -67,7 +70,8 @@ namespace NPOI.HSSF.EventModel
             {
                 return true;
             }
-            return _sids.BinarySearch((short)sid) >= 0;
+
+            return _sids.Contains((short)sid);
         }
         /**
      * sends the record event to all registered listeners.

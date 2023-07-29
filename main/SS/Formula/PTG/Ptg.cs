@@ -54,7 +54,7 @@ namespace NPOI.SS.Formula.PTG
          */
         public static Ptg[] ReadTokens(int size, ILittleEndianInput in1)
         {
-            ArrayList temp = new ArrayList(4 + size / 2);
+            var temp = new List<Ptg>(4 + size / 2);
             int pos = 0;
             bool hasArrayPtgs = false;
             while (pos < size)
@@ -180,14 +180,14 @@ namespace NPOI.SS.Formula.PTG
             }
             throw new Exception("Unexpected base token id (" + id + ")");
         }
-        private static Ptg[] ToPtgArray(ArrayList l)
+        private static Ptg[] ToPtgArray(List<Ptg> l)
         {
             if (l.Count == 0)
             {
-                return EMPTY_PTG_ARRAY;
+                return Array.Empty<Ptg>();
             }
 
-            Ptg[] result = l.ToArray<Ptg>();
+            Ptg[] result = l.ToArray();
             return result;
         }
         /**

@@ -22,8 +22,9 @@ namespace NPOI.SS.Formula
     using System.Text;
     using System.Collections;
     using NPOI.SS.Util;
+    using System.Collections.Generic;
 
-    public class BookSheetKey
+    public class BookSheetKey : IEquatable<BookSheetKey>
     {
 
         private int _bookIndex;
@@ -38,7 +39,11 @@ namespace NPOI.SS.Formula
         {
             return _bookIndex * 17 + _sheetIndex;
         }
-        public override bool Equals(Object obj)
+        public override bool Equals(object obj)
+        {
+            return obj is BookSheetKey bk && Equals(bk);
+        }
+        public bool Equals(BookSheetKey obj)
         {
             BookSheetKey other = (BookSheetKey)obj;
             return _bookIndex == other._bookIndex && _sheetIndex == other._sheetIndex;
@@ -55,7 +60,7 @@ namespace NPOI.SS.Formula
 
         private  class BlankCellSheetGroup
         {
-            private IList _rectangleGroups;
+            private List<BlankCellRectangleGroup> _rectangleGroups;
             private int _currentRowIndex;
             private int _firstColumnIndex;
             private int _lastColumnIndex;
@@ -63,7 +68,7 @@ namespace NPOI.SS.Formula
 
             public BlankCellSheetGroup()
             {
-                _rectangleGroups = new ArrayList();
+                _rectangleGroups = new List<BlankCellRectangleGroup>();
                 _currentRowIndex = -1;
             }
 
@@ -194,11 +199,11 @@ namespace NPOI.SS.Formula
             }
         }
 
-        private Hashtable _sheetGroupsByBookSheet;
+        private Dictionary<BookSheetKey, BlankCellSheetGroup> _sheetGroupsByBookSheet;
 
         public FormulaUsedBlankCellSet()
         {
-            _sheetGroupsByBookSheet = new Hashtable();
+            _sheetGroupsByBookSheet = new Dictionary<BookSheetKey, BlankCellSheetGroup>();
         }
 
         public void AddCell(int bookIndex, int sheetIndex, int rowIndex, int columnIndex)
@@ -211,19 +216,17 @@ namespace NPOI.SS.Formula
         {
             BookSheetKey key = new BookSheetKey(bookIndex, sheetIndex);
 
-            BlankCellSheetGroup result = (BlankCellSheetGroup)_sheetGroupsByBookSheet[key];
-            if (result == null)
+            if (!_sheetGroupsByBookSheet.TryGetValue(key, out var result))
             {
                 result = new BlankCellSheetGroup();
-                _sheetGroupsByBookSheet[key]= result;
+                _sheetGroupsByBookSheet[key] = result;
             }
             return result;
         }
 
         public bool ContainsCell(BookSheetKey key, int rowIndex, int columnIndex)
         {
-            BlankCellSheetGroup bcsg = (BlankCellSheetGroup)_sheetGroupsByBookSheet[key];
-            if (bcsg == null)
+            if (!_sheetGroupsByBookSheet.TryGetValue(key, out var bcsg))
             {
                 return false;
             }

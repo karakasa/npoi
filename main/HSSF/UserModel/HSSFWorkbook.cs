@@ -123,13 +123,13 @@ namespace NPOI.HSSF.UserModel
         private class SheetRecordCollector : NPOI.HSSF.Record.Aggregates.RecordVisitor,IDisposable
         {
 
-            private ArrayList _list;
+            private List<Record> _list;
             private int _totalSize;
 
             public SheetRecordCollector()
             {
                 _totalSize = 0;
-                _list = new ArrayList(128);
+                _list = new List<Record>(128);
             }
             public int TotalSize
             {

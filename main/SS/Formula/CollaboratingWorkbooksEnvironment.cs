@@ -164,16 +164,15 @@ namespace NPOI.SS.Formula
         }
         private void UnhookOldEnvironments(WorkbookEvaluator[] evaluators)
         {
-            ArrayList oldEnvs = new ArrayList();
+            var oldEnvs = new List<CollaboratingWorkbooksEnvironment>();
             for (int i = 0; i < evaluators.Length; i++)
             {
                 oldEnvs.Add(evaluators[i].GetEnvironment());
             }
-            CollaboratingWorkbooksEnvironment[] oldCWEs = new CollaboratingWorkbooksEnvironment[oldEnvs.Count];
-            oldCWEs = oldEnvs.ToArray<CollaboratingWorkbooksEnvironment>();
-            for (int i = 0; i < oldCWEs.Length; i++)
+
+            foreach(var it in oldEnvs)
             {
-                oldCWEs[i].Unhook();
+                it.Unhook();
             }
         }
 

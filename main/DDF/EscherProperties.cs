@@ -20,6 +20,7 @@ namespace NPOI.DDF
 {
     using System;
     using System.Collections;
+    using System.Collections.Generic;
 
     /// <summary>
     /// Provides a list of all known escher properties including the description and
@@ -334,7 +335,7 @@ namespace NPOI.DDF
 	    public const short GROUPSHAPE__PRINT = 959;
         #endregion
 
-        private static Hashtable properties;
+        private static Dictionary<short, EscherPropertyMetaData> properties;
 
         /// <summary>
         /// Inits the props.
@@ -343,7 +344,7 @@ namespace NPOI.DDF
         {
             if (properties == null)
             {
-                properties = new Hashtable();
+                properties = new Dictionary<short, EscherPropertyMetaData>();
                 AddProp(TRANSFORM__ROTATION, GetData("transform.rotation"));
                 AddProp(PROTECTION__LOCKROTATION, GetData("protection.lockrotation"));
                 AddProp(PROTECTION__LOCKASPECTRATIO, GetData("protection.lockaspectratio"));
@@ -666,8 +667,8 @@ namespace NPOI.DDF
         public static String GetPropertyName(short propertyId)
         {
             InitProps();
-            EscherPropertyMetaData o = (EscherPropertyMetaData)properties[propertyId];
-            return o == null ? "unknown" : o.Description;
+
+            return properties.TryGetValue(propertyId, out var o) ? o.Description : "unknown";
         }
 
         /// <summary>
@@ -678,8 +679,8 @@ namespace NPOI.DDF
         public static byte GetPropertyType(short propertyId)
         {
             InitProps();
-            EscherPropertyMetaData escherPropertyMetaData = (EscherPropertyMetaData)properties[propertyId];
-            return escherPropertyMetaData == null ? (byte)0 : escherPropertyMetaData.Type;
+
+            return properties.TryGetValue(propertyId, out var o) ? o.Type : (byte)0;
         }
     }
 }

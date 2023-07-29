@@ -19,6 +19,7 @@ namespace NPOI.HSSF.UserModel
 {
     using System;
     using System.Collections;
+    using System.Collections.Generic;
     using NPOI.Util.Collections;
     using System.Globalization;
 
@@ -30,7 +31,7 @@ namespace NPOI.HSSF.UserModel
     {
         private String fontName;
         private int height;
-        private Hashtable charWidths = new Hashtable();
+        private Dictionary<char, int> charWidths = new();
 
         /// <summary>
         /// Construct the font details with the given name and height.
@@ -80,11 +81,14 @@ namespace NPOI.HSSF.UserModel
         /// <returns></returns>
         public int GetCharWidth(char c)
         {
-            object widthInteger = charWidths[c];
-            if (widthInteger == null)
-                return 'W' == c ? 0 : GetCharWidth('W');
+            if (charWidths.TryGetValue(c, out var widthInteger))
+            {
+                return widthInteger;
+            }
             else
-                return (int)widthInteger;
+            {
+                return 'W' == c ? 0 : GetCharWidth('W');
+            }
         }
 
         /// <summary>

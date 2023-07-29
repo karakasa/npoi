@@ -20,12 +20,13 @@ namespace NPOI.HSSF.Model
     using NPOI.DDF;
     using System;
     using System.Collections;
+    using System.Collections.Generic;
 
     [Obsolete("deprecated in POI 3.15-beta2, scheduled for removal in 3.17, use DrawingManager2 instead")]
     public class DrawingManager
     {
         EscherDggRecord dgg;
-        Hashtable dgMap = new Hashtable(); // key = Short(drawingId), value=EscherDgRecord
+        Dictionary<short, EscherDgRecord> dgMap = new Dictionary<short, EscherDgRecord>(); // key = Short(drawingId), value=EscherDgRecord
 
         public DrawingManager(EscherDggRecord dgg)
         {
@@ -55,7 +56,10 @@ namespace NPOI.HSSF.Model
         public int AllocateShapeId(short drawingGroupId)
         {
             // Get the last shape id for this drawing Group.
-            EscherDgRecord dg = (EscherDgRecord)dgMap[drawingGroupId];
+
+            if (!dgMap.TryGetValue(drawingGroupId, out var dg))
+                dg = null;
+
             int lastShapeId = dg.LastMSOSPID;
 
 

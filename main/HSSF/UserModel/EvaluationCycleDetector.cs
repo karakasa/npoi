@@ -20,6 +20,7 @@ namespace NPOI.HSSF.UserModel
     using System;
     using System.Text;
     using System.Collections;
+    using System.Collections.Generic;
 
     /**
      * Instances of this class keep track of multiple dependent cell evaluations due
@@ -106,11 +107,11 @@ namespace NPOI.HSSF.UserModel
             }
         }
 
-        private IList _evaluationFrames;
+        private List<CellEvaluationFrame> _evaluationFrames;
 
         public EvaluationCycleDetector()
         {
-            _evaluationFrames = new ArrayList();
+            _evaluationFrames = new List<CellEvaluationFrame>();
         }
 
         /**
@@ -170,7 +171,10 @@ namespace NPOI.HSSF.UserModel
                         + cefActual.FormatAsString() + "}");
             }
             // else - no problems so pop current frame 
-            _evaluationFrames.Remove(nFrames);
+            _evaluationFrames.RemoveAt(nFrames);
+
+            // The original code is likely wrong. It should be RemoveAt.
+            // _evaluationFrames.Remove(nFrames);
         }
     }
 }

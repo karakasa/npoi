@@ -28,6 +28,7 @@ using System;
 using System.Text;
 using System.IO;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace NPOI.Util.Collections
 {
@@ -36,7 +37,7 @@ namespace NPOI.Util.Collections
     /// </summary>
     public class Properties
     {
-        private Hashtable _col;
+        private Dictionary<string, string> _col;
         private const string whiteSpaceChars = " \t\r\n\f";
         private const string keyValueSeparators = "=: \t\r\n\f";
         private const string strictKeyValueSeparators = "=:";
@@ -46,7 +47,7 @@ namespace NPOI.Util.Collections
         /// </summary>
         public Properties()
         {
-            _col = new Hashtable();
+            _col = new Dictionary<string, string>();
         }
 
         /// <summary>
@@ -110,7 +111,8 @@ namespace NPOI.Util.Collections
         /// <value></value>
         public virtual string this[string key] {
             get {
-                return (string)_col[key];
+
+                return _col.TryGetValue(key, out var o) ? o : null;
             }
 
             set {

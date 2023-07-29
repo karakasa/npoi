@@ -34,6 +34,7 @@ namespace NPOI.HPSF
     using NPOI.Util;
     using NPOI.HPSF.Wellknown;
     using System.Globalization;
+    using System.Collections.Generic;
 
     /// <summary>
     /// Adds writing capability To the {@link Section} class.
@@ -56,7 +57,7 @@ namespace NPOI.HPSF
          * decision has been taken when specifying the "properties" field
          * as an Property[]. It should have been a {@link java.util.List}.
          */
-        private ArrayList preprops;
+        private List<Property> preprops;
 
 
 
@@ -77,7 +78,7 @@ namespace NPOI.HPSF
             dirty = true;
             formatID = null;
             offset = -1;
-            preprops = new ArrayList();
+            preprops = new List<Property>();
         }
 
 
@@ -138,7 +139,7 @@ namespace NPOI.HPSF
         public void SetProperties(Property[] properties)
         {
             this.properties = properties;
-            preprops = new ArrayList();
+            preprops = new List<Property>();
             for (int i = 0; i < properties.Length; i++)
                 preprops.Add(properties[i]);
             dirty = true;
@@ -245,12 +246,7 @@ namespace NPOI.HPSF
         /// <param name="id">The ID of the property To be Removed</param>
         public void RemoveProperty(long id)
         {
-            for (IEnumerator i = preprops.GetEnumerator(); i.MoveNext(); )
-                if (((Property)i.Current).ID == id)
-                {
-                    preprops.Remove(i.Current);
-                    break;
-                }
+            preprops.RemoveAll(x => x.ID == id);
             dirty = true;
         }
 
@@ -307,11 +303,11 @@ namespace NPOI.HPSF
         }
 
 
-        private class PropertyComparer : IComparer
+        private class PropertyComparer : IComparer<Property>
         {
             #region IComparer Members
 
-            int IComparer.Compare(object o1, object o2)
+            public int Compare(Property o1, Property o2)
             {
                 Property p1 = (Property)o1;
                 Property p2 = (Property)o2;
@@ -557,7 +553,7 @@ namespace NPOI.HPSF
         /// </summary>
         public void EnsureProperties()
         {
-            properties = preprops.ToArray<Property>();
+            properties = preprops.ToArray();
         }
 
 

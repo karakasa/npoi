@@ -29,6 +29,7 @@ using System;
 using System.Text;
 using System.IO;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace NPOI.Util
 {
@@ -126,7 +127,7 @@ namespace NPOI.Util
         {
             int characterCount = 0;
             byte b = (byte) 0;
-            ArrayList bytes = new ArrayList();
+            var bytes = new List<byte>();
             char a = (char)('a' - 10);
             char A = (char)('A' - 10);
             while (true)
@@ -168,7 +169,7 @@ namespace NPOI.Util
                     }
                 }
             }
-            byte[] polished = bytes.ToArray<byte>();
+            byte[] polished = bytes.ToArray();
             //byte[] rval = new byte[polished.Length];
             //for ( int j = 0; j < polished.Length; j++ )
             //{

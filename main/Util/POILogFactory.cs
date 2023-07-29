@@ -39,7 +39,7 @@ namespace NPOI.Util
         /**
          * Map of POILogger instances, with classes as keys
          */
-        private static Hashtable _loggers = new Hashtable();
+        private static Dictionary<string, POILogger> _loggers = new Dictionary<string, POILogger>();
 
         /**
          * A common instance of NullLogger, as it does nothing
@@ -109,13 +109,13 @@ namespace NPOI.Util
         	    return _nullLogger;
             }
 
-            
+
             // Fetch the right logger for them, creating
             //  it if that's required 
-            if (_loggers.ContainsKey(cat)) {
-                logger = (POILogger)_loggers[cat];
-            } else {
-                try {
+            if (!_loggers.TryGetValue(cat, out logger))
+            {
+                try
+                {
                     //logger=assembly.CreateInstance(_loggerClassName) as POILogger;
 
                     // REMOVE-REFLECTION: I doubt if the following line would work,
@@ -127,11 +127,13 @@ namespace NPOI.Util
 
                     logger = CreateLoggerByTypeName(_loggerClassName);
                     logger.Initialize(cat);
-                } catch(Exception) {
-                  // Give up and use the null logger
-                  logger = _nullLogger;
                 }
-                
+                catch (Exception)
+                {
+                    // Give up and use the null logger
+                    logger = _nullLogger;
+                }
+
                 // Save for next time
                 _loggers[cat] = logger;
             }
