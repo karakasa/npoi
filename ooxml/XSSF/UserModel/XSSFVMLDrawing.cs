@@ -70,7 +70,7 @@ namespace NPOI.XSSF.UserModel
         private static Regex ptrn_shapeId = new Regex("_x0000_s(\\d+)", RegexOptions.Compiled);
         private static Regex ptrn_shapeTypeId = new Regex("_x0000_[tm](\\d+)", RegexOptions.Compiled);
 
-        private List<object> _items = new();
+        private ArrayList _items = new();
         private string _shapeTypeId;
         private int _shapeId = 1024;
         /**
@@ -126,7 +126,7 @@ namespace NPOI.XSSF.UserModel
              nsmgr.AddNamespace("o", "urn:schemas-microsoft-com:office:office");
              nsmgr.AddNamespace("x", "urn:schemas-microsoft-com:office:excel");
              nsmgr.AddNamespace("v", "urn:schemas-microsoft-com:vml");
-             _items = new List<object>();
+             _items = new ArrayList();
             XmlNodeList nodes=doc.SelectNodes("/xml/*",nsmgr);
             foreach (XmlNode nd in nodes)
             {
@@ -174,7 +174,7 @@ namespace NPOI.XSSF.UserModel
             }
         }
 
-        internal List<object> GetItems()
+        internal ArrayList GetItems()
         {
             return _items;
         }

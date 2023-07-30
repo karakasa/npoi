@@ -46,12 +46,9 @@ namespace NPOI.Util
         /// <returns></returns>
         public static BitField GetInstance(int mask)
         {
-            BitField f = (BitField)instances[mask];
-            if (f == null)
-            {
-                f = new BitField(mask);
-                instances[mask] = f;
-            }
+            if (!instances.TryGetValue(mask, out var f))
+                instances[mask] = f = new BitField(mask);
+
             return f;
         }
     }

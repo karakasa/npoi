@@ -32,6 +32,8 @@ namespace NPOI.HPSF
     using System.Collections;
     using NPOI.Util;
     using NPOI.HPSF.Wellknown;
+    using System.Collections.Generic;
+    using NPOI.Util.Collections;
 
     /// <summary>
     /// Represents a section in a {@link PropertySet}.
@@ -509,59 +511,57 @@ namespace NPOI.HPSF
          */
         public override bool Equals(Object o)
         {
-            if (o == null || !(o is Section))
+            if (o is not Section s)
                 return false;
-            Section s = (Section)o;
+            
             if (!s.FormatID.Equals(FormatID))
                 return false;
 
             /* Compare all properties except 0 and 1 as they must be handled 
              * specially. */
-            Property[] pa1 = new Property[Properties.Length];
-            Property[] pa2 = new Property[s.Properties.Length];
-            System.Array.Copy(Properties, 0, pa1, 0, pa1.Length);
-            System.Array.Copy(s.Properties, 0, pa2, 0, pa2.Length);
+            var pa1 = new List<Property>(Properties);
+            var pa2 = new List<Property>(s.Properties);
 
             /* Extract properties 0 and 1 and Remove them from the copy of the
              * arrays. */
             Property p10 = null;
             Property p20 = null;
-            for (int i = 0; i < pa1.Length; i++)
+            for (int i = 0; i < pa1.Count; i++)
             {
                 long id = pa1[i].ID;
                 if (id == 0)
                 {
                     p10 = pa1[i];
-                    pa1 = Remove(pa1, i);
+                    pa1.RemoveAt(i);
                     i--;
                 }
                 if (id == 1)
                 {
                     // p11 = pa1[i];
-                    pa1 = Remove(pa1, i);
+                    pa1.RemoveAt(i);
                     i--;
                 }
             }
-            for (int i = 0; i < pa2.Length; i++)
+            for (int i = 0; i < pa2.Count; i++)
             {
                 long id = pa2[i].ID;
                 if (id == 0)
                 {
                     p20 = pa2[i];
-                    pa2 = Remove(pa2, i);
+                    pa2.RemoveAt(i);
                     i--;
                 }
                 if (id == 1)
                 {
                     // p21 = pa2[i];
-                    pa2 = Remove(pa2, i);
+                    pa2.RemoveAt(i);
                     i--;
                 }
             }
 
             /* If the number of properties (not counting property 1) is unequal the
              * sections are unequal. */
-            if (pa1.Length != pa2.Length)
+            if (pa1.Count != pa2.Count)
                 return false;
 
             /* If the dictionaries are unequal the sections are unequal. */
@@ -581,24 +581,6 @@ namespace NPOI.HPSF
                 return false;
             else
                 return Util.AreEqual(pa1, pa2);
-        }
-
-
-
-        /// <summary>
-        /// Removes a field from a property array. The resulting array Is
-        /// compactified and returned.
-        /// </summary>
-        /// <param name="pa">The property array.</param>
-        /// <param name="i">The index of the field To be Removed.</param>
-        /// <returns>the compactified array.</returns>
-        private Property[] Remove(Property[] pa, int i)
-        {
-            Property[] h = new Property[pa.Length - 1];
-            if (i > 0)
-                System.Array.Copy(pa, 0, h, 0, i);
-            System.Array.Copy(pa, i + 1, h, i, h.Length - i);
-            return h;
         }
 
 

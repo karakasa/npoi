@@ -107,26 +107,21 @@ namespace NPOI.HSSF.EventUserModel
         /// <returns>numeric user-specified result code. If zero continue Processing.</returns>
         public short ProcessRecord(Record rec)
         {
-            Object obj = records[rec.Sid];
             short userCode = 0;
 
-            if (obj != null)
+            if (records.TryGetValue(rec.Sid, out var listeners))
             {
-                IList listeners = (IList)obj;
-
                 for (int k = 0; k < listeners.Count; k++)
                 {
-                    Object listenObj = listeners[k];
-                    if (listenObj is AbortableHSSFListener)
+                    var listenObj = listeners[k];
+                    if (listenObj is AbortableHSSFListener abortableListener)
                     {
-                        AbortableHSSFListener listener = (AbortableHSSFListener)listenObj;
-                        userCode = listener.AbortableProcessRecord(rec);
+                        userCode = abortableListener.AbortableProcessRecord(rec);
                         if (userCode != 0) break;
                     }
                     else
                     {
-                        IHSSFListener listener = (IHSSFListener)listenObj;
-                        listener.ProcessRecord(rec);
+                        listenObj.ProcessRecord(rec);
                     }
                 }
             }

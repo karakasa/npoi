@@ -184,7 +184,7 @@ namespace NPOI.SS.Formula.PTG
         {
             if (l.Count == 0)
             {
-                return Array.Empty<Ptg>();
+                return EMPTY_PTG_ARRAY;
             }
 
             Ptg[] result = l.ToArray();

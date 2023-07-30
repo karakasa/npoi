@@ -204,7 +204,7 @@ namespace NPOI.HPSF
             long nrEntries = LittleEndian.GetUInt(src, o);
             o += LittleEndianConsts.INT_SIZE;
 
-            var m = new Dictionary<long, string>((int)nrEntries);
+            var m = new Hashtable((int)nrEntries, 1.0f);
 
             try
             {
