@@ -188,7 +188,7 @@ namespace NPOI.HPSF
         /// <param name="Length">The dictionary Contains at most this many bytes.</param>
         /// <param name="codepage">The codepage of the string values.</param>
         /// <returns>The dictonary</returns>
-        protected IDictionary ReadDictionary(byte[] src, long offset,
+        protected Dictionary<long, string> ReadDictionary(byte[] src, long offset,
                                      int Length, int codepage)
         {
             /* Check whether "offset" points into the "src" array". */
@@ -204,7 +204,7 @@ namespace NPOI.HPSF
             long nrEntries = LittleEndian.GetUInt(src, o);
             o += LittleEndianConsts.INT_SIZE;
 
-            var m = new Hashtable((int)nrEntries, 1.0f);
+            var m = new Dictionary<long, string>((int)nrEntries);
 
             try
             {

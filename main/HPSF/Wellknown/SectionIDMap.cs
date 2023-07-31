@@ -30,6 +30,8 @@ namespace NPOI.HPSF.Wellknown
     using System;
     using System.Text;
     using System.Collections;
+    using System.Collections.Generic;
+    using System.Runtime.CompilerServices;
 
     /// <summary>
     /// Maps section format IDs To {@link PropertyIDMap}s. It Is
@@ -46,7 +48,7 @@ namespace NPOI.HPSF.Wellknown
     /// @author Rainer Klute (klute@rainer-klute.de)
     /// @since 2002-02-09
     /// </summary>
-    public class SectionIDMap : Hashtable
+    public class SectionIDMap : Dictionary<string, PropertyIDMap>
     {
 
         /**
@@ -163,7 +165,20 @@ namespace NPOI.HPSF.Wellknown
         public Object Put(byte[] sectionFormatID,
                           PropertyIDMap propertyIDMap)
         {
-            return this[sectionFormatID] = propertyIDMap;
+            return this[Encoding.UTF8.GetString(sectionFormatID)] = propertyIDMap;
+        }
+
+        public new PropertyIDMap this[string key]
+        {
+            get
+            {
+                return base.TryGetValue(key, out var val) ? val : null;
+            }
+
+            set
+            {
+                base[key] = value;
+            }
         }
     }
 }

@@ -32,6 +32,8 @@ namespace NPOI.HPSF
     using NPOI.HPSF.Wellknown;
     using System.Text;
     using NPOI.Util;
+    using System.Collections.Generic;
+    using System.Linq;
 
 
     /// <summary>
@@ -58,18 +60,18 @@ namespace NPOI.HPSF
     /// <a href="mailto:klute@rainer-klute.de">&lt;klute@rainer-klute.de&gt;</a>
     /// @since 2006-02-09
     /// </summary>
-    public class CustomProperties : Hashtable
+    public class CustomProperties : Dictionary<long, CustomProperty>
     {
 
         /**
          * Maps property IDs To property names.
          */
-        private Hashtable dictionaryIDToName = new Hashtable();
+        private Dictionary<long, string> dictionaryIDToName = new();
 
         /**
          * Maps property names To property IDs.
          */
-        private Hashtable dictionaryNameToID = new Hashtable();
+        private Dictionary<string, long> dictionaryNameToID = new();
 
         /**
          * Tells whether this object is pure or not.
@@ -94,10 +96,6 @@ namespace NPOI.HPSF
                 isPure = false;
                 return null;
             }
-            if (!(name is String))
-                throw new ArgumentException("The name of a custom property must " +
-                        "be a String, but it is a " +
-                        name.GetType().Name);
             if (!(name.Equals(cp.Name)))
                 throw new ArgumentException("Parameter \"name\" (" + name +
                         ") and custom property's name (" + cp.Name +
@@ -105,14 +103,15 @@ namespace NPOI.HPSF
 
             /* Register name and ID in the dictionary. Mapping in both directions is possible. If there is alReady a  */
             long idKey = cp.ID;
-            Object oldID = dictionaryNameToID[name];
-            if(oldID!=null)
+            var hasValue = dictionaryNameToID.TryGetValue(name, out var oldID);
+
+            if(hasValue)
                 dictionaryIDToName.Remove(oldID);
             dictionaryNameToID[name]=idKey;
             dictionaryIDToName[idKey]= name;
 
             /* Put the custom property into this map. */
-            if (oldID != null)
+            if (hasValue)
                 base.Remove(oldID);
 
             base[idKey]= cp;
@@ -161,23 +160,17 @@ namespace NPOI.HPSF
         private Object Put(CustomProperty customProperty)
         {
             String name = customProperty.Name;
-            
+
             /* Check whether a property with this name is in the map alReady. */
-            object oldId = dictionaryNameToID[(name)];
-            if (oldId!=null)
+
+            if (dictionaryNameToID.TryGetValue(name, out var oldId))
             {
                 customProperty.ID = (long)oldId;
             }
             else
             {
-                long max = 1;
-                for (IEnumerator i = dictionaryIDToName.Keys.GetEnumerator(); i.MoveNext(); )
-                {
-                    long id = (long)i.Current;
-                    if (id > max)
-                        max = id;
-                }
-                customProperty.ID = max + 1;
+                var ids = dictionaryIDToName.Keys;
+                customProperty.ID = ids.Count == 0 ? 2 : ids.Max() + 1;
             }
             return this.Put(name, customProperty);
         }
@@ -193,9 +186,8 @@ namespace NPOI.HPSF
         ///  if the specified property was not found.</returns>
         public object Remove(String name)
         {
-            if (dictionaryNameToID[name] == null)
+            if (!dictionaryNameToID.TryGetValue(name, out var id))
                 return null;
-            long id = (long)dictionaryNameToID[name];
             dictionaryIDToName.Remove(id);
             dictionaryNameToID.Remove(name);
             CustomProperty tmp = (CustomProperty)this[id];
@@ -323,24 +315,28 @@ namespace NPOI.HPSF
         {
             get
             {
-                object x = dictionaryNameToID[name];
+                var hasValue = dictionaryNameToID.TryGetValue(name, out var x);
+
                 //string.Equals seems not support Unicode string
-                if (x == null)
+                if (!hasValue)
                 {
-                    IEnumerator dic = dictionaryNameToID.GetEnumerator();
-                    while (dic.MoveNext())
+                    foreach (var kv in dictionaryNameToID)
                     {
-                        string key = ((DictionaryEntry)dic.Current).Key as string;
+                        string key = kv.Key;
 
                         int codepage = this.Codepage;
                         if (codepage < 0)
                             codepage = (int)CodePageUtil.CP_UNICODE;
-                        byte[] a= Encoding.GetEncoding(codepage).GetBytes(key);
+                        byte[] a = Encoding.GetEncoding(codepage).GetBytes(key);
                         byte[] b = Encoding.UTF8.GetBytes(name);
-                        if (NPOI.Util.Arrays.Equals(a, b))
-                            x = ((DictionaryEntry)dic.Current).Value;
+                        if (Arrays.Equals(a, b))
+                        {
+                            x = kv.Value;
+                            hasValue = true;
+                        }
                     }
-                    if (x == null)
+
+                    if (!hasValue)
                     {
                         return null;
                     }
@@ -353,15 +349,16 @@ namespace NPOI.HPSF
         /**
      * Checks against both String Name and Long ID
      */
-        public override bool ContainsKey(Object key)
+        public bool ContainsKey(Object key)
         {
-            if (key is long)
+            if (key is long lng)
             {
-                return base.ContainsKey((long)key);
+                return base.ContainsKey(lng);
             }
-            if (key is String)
+            if (key is String str)
             {
-                return base.ContainsKey((long)dictionaryNameToID[(key)]);
+                if (dictionaryNameToID.TryGetValue(str, out var id))
+                    return base.ContainsKey(id);
             }
             return false;
         }
@@ -369,17 +366,17 @@ namespace NPOI.HPSF
         /**
          * Checks against both the property, and its values. 
          */
-        public override bool ContainsValue(Object value)
+        public bool ContainsValue(Object value)
         {
-            if (value is CustomProperty)
+            if (value is CustomProperty cp2)
             {
-                return base.ContainsValue(value);
+                return base.ContainsValue(cp2);
             }
             else
             {
-                foreach (object cp in base.Values)
+                foreach (var cp in base.Values)
                 {
-                    if ((cp as CustomProperty).Value == value)
+                    if (cp.Value == value)
                     {
                         return true;
                     }

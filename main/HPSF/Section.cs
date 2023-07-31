@@ -242,7 +242,7 @@ namespace NPOI.HPSF
             /* Look for the codepage. */
             int codepage = -1;
             for (IEnumerator i = propertyList.GetEnumerator();
-                 codepage == -1 && i.MoveNext(); )
+                 codepage == -1 && i.MoveNext();)
             {
                 ple = (PropertyListEntry)i.Current;
 
@@ -268,7 +268,7 @@ namespace NPOI.HPSF
             /* Pass 2: Read all properties - including the codepage property,
              * if available. */
             int i1 = 0;
-            for (IEnumerator i = propertyList.GetEnumerator(); i.MoveNext(); )
+            for (IEnumerator i = propertyList.GetEnumerator(); i.MoveNext();)
             {
                 ple = (PropertyListEntry)i.Current;
                 Property p = new Property(ple.id, src,
@@ -513,7 +513,7 @@ namespace NPOI.HPSF
         {
             if (o is not Section s)
                 return false;
-            
+
             if (!s.FormatID.Equals(FormatID))
                 return false;
 
@@ -569,9 +569,9 @@ namespace NPOI.HPSF
             if (p10 != null && p20 != null)
             {
                 //tony qu fixed this issue
-                Hashtable a=(Hashtable)p10.Value;
-                Hashtable b = (Hashtable)p20.Value;
-                dictionaryEqual = a.Count==b.Count;
+                var a = (IDictionary)p10.Value;
+                var b = (IDictionary)p20.Value;
+                dictionaryEqual = a.Count == b.Count;
             }
             else if (p10 != null || p20 != null)
             {
@@ -646,13 +646,15 @@ namespace NPOI.HPSF
         /// a dictionary.</value>
         public virtual IDictionary Dictionary
         {
-            get {
+            get
+            {
                 if (dictionary == null)
-                    dictionary = new Hashtable();
+                    dictionary = new Dictionary<long, string>();
                 return dictionary;
             }
-            set { 
-                dictionary = value; 
+            set
+            {
+                dictionary = value;
             }
         }
 

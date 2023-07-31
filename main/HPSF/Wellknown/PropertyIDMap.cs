@@ -27,8 +27,10 @@
 
 namespace NPOI.HPSF.Wellknown
 {
+    using NPOI.SS.Formula.Eval;
     using System;
     using System.Collections;
+    using System.Collections.Generic;
 
 
     /// <summary>
@@ -43,7 +45,7 @@ namespace NPOI.HPSF.Wellknown
     /// <a href="mailto:klute@rainer-klute.de">&lt;klute@rainer-klute.de&gt;</a>
     /// @since 2002-02-09
     /// </summary>
-    public class PropertyIDMap : Hashtable
+    public class PropertyIDMap : Dictionary<long, string>
     {
 
         /*
@@ -323,9 +325,9 @@ namespace NPOI.HPSF.Wellknown
         /// <param name="initialCapacity">initialCapacity The initial capacity as defined for
         /// {@link HashMap}</param>
         /// <param name="loadFactor">The load factor as defined for {@link HashMap}</param>
-        public PropertyIDMap(int initialCapacity, float loadFactor):base(initialCapacity, loadFactor)
+        public PropertyIDMap(int initialCapacity, float loadFactor) : base(initialCapacity)
         {
-            
+
         }
 
 
@@ -334,9 +336,15 @@ namespace NPOI.HPSF.Wellknown
         /// Initializes a new instance of the <see cref="PropertyIDMap"/> class.
         /// </summary>
         /// <param name="map">The instance To be Created is backed by this map.</param>
-        public PropertyIDMap(IDictionary map):base(map)
+        public PropertyIDMap(IDictionary map)
         {
-            
+            var enumerator = map.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                var k = (long)enumerator.Key;
+                var v = (string)enumerator.Value;
+                base[k] = v;
+            }
         }
 
 
@@ -351,7 +359,7 @@ namespace NPOI.HPSF.Wellknown
         /// returns the previous value associated with the specified id</returns>
         public Object Put(long id, String idString)
         {
-            return this[id]=idString;
+            return this[id] = idString;
         }
 
 
@@ -367,7 +375,18 @@ namespace NPOI.HPSF.Wellknown
             return this[id];
         }
 
+        public new string this[long key]
+        {
+            get
+            {
+                return base.TryGetValue(key, out var val) ? val : null;
+            }
 
+            set
+            {
+                base[key] = value;
+            }
+        }
 
         /// <summary>
         /// Gets the Summary Information properties singleton

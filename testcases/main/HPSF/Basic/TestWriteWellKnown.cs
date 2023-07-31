@@ -549,7 +549,7 @@ namespace TestCases.HPSF.Basic
                 /* The document does not have custom properties. */
                 return;
 
-            foreach (DictionaryEntry de in cps)
+            foreach (var de in cps)
             {
                 CustomProperty cp = (CustomProperty)de.Value;
                 Assert.IsNotNull(cp.Name);
