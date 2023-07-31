@@ -398,7 +398,7 @@ namespace NPOI.HSSF.UserModel
         /// </summary>
         /// <param name="records">The records.</param>
         /// <param name="offset">The offset.</param>
-        private void ConvertLabelRecords(IList records, int offset)
+        private void ConvertLabelRecords(List<Record> records, int offset)
         {
             //if (log.Check(POILogger.DEBUG))
             //    log.Log(POILogger.DEBUG, "ConvertLabelRecords called");

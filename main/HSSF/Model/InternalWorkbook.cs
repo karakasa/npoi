@@ -123,7 +123,7 @@ namespace NPOI.HSSF.Model
         private bool uses1904datewindowing = false;  // whether 1904 date windowing is being used
         [NonSerialized]
         private DrawingManager2 drawingManager;
-        private IList escherBSERecords ;  // EscherBSERecord
+        private List<EscherBSERecord> escherBSERecords ;  // EscherBSERecord
         [NonSerialized]
         private WindowOneRecord windowOne;
         [NonSerialized]

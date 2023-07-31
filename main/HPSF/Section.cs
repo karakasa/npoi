@@ -193,7 +193,7 @@ namespace NPOI.HPSF
 
             /* Pass 1: Read the property list. */
             int pass1OffSet = o1;
-            ArrayList propertyList = new ArrayList(propertyCount);
+            var propertyList = new List<PropertyListEntry>(propertyCount);
             PropertyListEntry ple;
             for (int i = 0; i < properties.Length; i++)
             {

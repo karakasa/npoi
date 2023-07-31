@@ -210,15 +210,16 @@ namespace NPOI.DDF
         {
             get
             {
-                IList<EscherContainerRecord> containers = new List<EscherContainerRecord>();
-                for (IEnumerator iterator = ChildRecords.GetEnumerator(); iterator.MoveNext(); )
+                var containers = new List<EscherContainerRecord>();
+
+                foreach (var r in ChildRecords)
                 {
-                    EscherRecord r = (EscherRecord)iterator.Current;
-                    if (r is EscherContainerRecord)
+                    if (r is EscherContainerRecord ecr)
                     {
-                        containers.Add((EscherContainerRecord)r);
+                        containers.Add(ecr);
                     }
                 }
+
                 return containers;
             }
         }
@@ -375,18 +376,15 @@ namespace NPOI.DDF
         /// <param name="out1">list to store found records</param>
         public void GetRecordsById(short recordId, ref ArrayList out1)
         {
-            for (IEnumerator it = ChildRecords.GetEnumerator(); it.MoveNext(); )
+            foreach (var r in ChildRecords)
             {
-                Object er = it.Current;
-                EscherRecord r = (EscherRecord)er;
-                if (r is EscherContainerRecord)
+                if (r is EscherContainerRecord c)
                 {
-                    EscherContainerRecord c = (EscherContainerRecord)r;
                     c.GetRecordsById(recordId, ref out1);
                 }
                 else if (r.RecordId == recordId)
                 {
-                    out1.Add(er);
+                    out1.Add(r);
                 }
             }
         }

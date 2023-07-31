@@ -94,7 +94,7 @@ namespace NPOI.HSSF.Record
         {
             get
             {
-                IList escherRecords = EscherRecords;
+                var escherRecords = EscherRecords;
                 byte[] rawData = RawData;
                 if (escherRecords.Count == 0 && rawData != null)
                 {

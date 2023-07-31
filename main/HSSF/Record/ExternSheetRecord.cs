@@ -114,7 +114,7 @@ namespace NPOI.HSSF.Record
     public class ExternSheetRecord : StandardRecord
     {
         public const short sid = 0x17;
-        private IList<RefSubRecord> _list;
+        private List<RefSubRecord> _list;
 
 
 
